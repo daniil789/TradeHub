@@ -1,0 +1,28 @@
+﻿@model PaginatedList<TradeHubApp.Models.Advertisement>
+@{
+    ViewData["Title"] = "My Advertisements";
+}
+
+<h2>@ViewData["Title"]</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model[0].Title)</th>
+            <!-- Добавьте дополнительные поля по необходимости -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <!-- Добавьте дополнительные поля по необходимости -->
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="pagination">
+    <a asp-action="MyAdvertisements" asp-route-pageNumber="@(Model.PageIndex - 1)" class="@(Model.HasPreviousPage ? "enabled" : "disabled")">Previous</a>
+    <a asp-action="MyAdvertisements" asp-route-pageNumber="@(Model.PageIndex + 1)" class="@(Model.HasNextPage ? "enabled" : "disabled")">Next</a>
+</div>
