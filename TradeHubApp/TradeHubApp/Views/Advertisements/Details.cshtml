@@ -1,13 +1,13 @@
 ﻿@model TradeHubApp.Models.Advertisement
 @{
-    ViewData["Title"] = "Advertisement Details";
+    ViewData["Title"] = "Объявление";
 }
 
 <h2>@Model.Title</h2>
 <p>@Model.Description</p>
 <!-- Здесь вы можете добавить больше полей, если у вас есть -->
 
-<h3>Comments</h3>
+<h3>Комментарии</h3>
 @if (Model.Comments.Any())
 {
     foreach(var comment in Model.Comments.OrderBy(c => c.Timestamp))
@@ -20,16 +20,16 @@
 }
 else
 {
-    <p>No comments yet.</p>
+    <p>Комментариев ещё нет</p>
 }
 
 @using (Html.BeginForm("AddComment", "Advertisements", FormMethod.Post))
 {
     <input type="hidden" name="advertisementId" value="@Model.Id" />
     <div class="form-group">
-        <textarea class="form-control" name="content" placeholder="Leave your comment" required></textarea>
+        <textarea class="form-control" name="content" placeholder="Оставьте отзыв" required></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Post Comment</button>
+    <button type="submit" class="btn btn-primary">Оставить комментарий</button>
 }
 @{
     var hasPurchased = true;// логика для определения, купил ли пользователь товар
@@ -38,15 +38,15 @@ else
 {
     <form asp-action="AddRating" method="post">
         <input type="hidden" name="advertisementId" value="@Model.Id" />
-        <label for="value">Rate this product:</label>
+        <label for="value">Оцените товар</label>
         <select name="value" id="value" required>
-            <option value="">Select a rating</option>
+            <option value="">Оценка</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
-        <button type="submit" class="btn btn-primary">Submit Rating</button>
+        <button type="submit" class="btn btn-primary">Оценить</button>
     </form>
 }

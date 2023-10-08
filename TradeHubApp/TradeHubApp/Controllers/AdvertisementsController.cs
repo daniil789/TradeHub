@@ -16,7 +16,7 @@ public class AdvertisementsController : Controller
         _context = context;
         _userManager = userManager;
     }
-    
+
     public IActionResult Create()
     {
         return View();
@@ -26,16 +26,13 @@ public class AdvertisementsController : Controller
     //[ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Advertisement advertisement)
     {
-        if (ModelState.IsValid)
-        {
-            advertisement.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Задаем ID пользователя, который создает объявление
-            _context.Add(advertisement);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(advertisement);
+        advertisement.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Задаем ID пользователя, который создает объявление
+        advertisement.PublicationDate = DateTime.UtcNow;
+        _context.Add(advertisement);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
     }
-    
+
     [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -57,20 +54,36 @@ public class AdvertisementsController : Controller
         if (id != advertisement.Id) return NotFound();
         if (!UserOwnsAdvertisement(id)) return Forbid(); // Пользователь может редактировать только свои объявления
 
-        if (ModelState.IsValid)
+        try
         {
-            try
-            {
-                _context.Update(advertisement);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-              return NotFound();
-            }
+            _context.Update(advertisement);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return NotFound();
+        }
+        return RedirectToAction(nameof(Index));
+
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Buy(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var price = _context.Advertisements.Single(x => x.Id == id).Price;
+        var balanse = _context.UserBalances.Single(x => x.UserId == userId);
+
+        if (price > balanse.Balance)
+        {
             return RedirectToAction(nameof(Index));
         }
-        return View(advertisement);
+
+        var newBalance = balanse.Balance - price;
+        balanse.Balance = newBalance;
+        _context.UserBalances.Update(balanse);
+       await _context.SaveChangesAsync();
+        return Ok("Покупка выполнена");
     }
 
     private bool UserOwnsAdvertisement(int id)
@@ -142,7 +155,7 @@ public class AdvertisementsController : Controller
         ViewData["CurrentFilter"] = searchString;
 
         var advertisements = from a in _context.Advertisements
-            select a;
+                             select a;
 
         if (!String.IsNullOrEmpty(searchString))
         {
@@ -168,7 +181,7 @@ public class AdvertisementsController : Controller
         int pageSize = 5;
         return View(await PaginatedList<Advertisement>.CreateAsync(advertisements.AsNoTracking(), pageNumber ?? 1, pageSize));
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> AddComment(int advertisementId, string content)
     {
@@ -180,13 +193,13 @@ public class AdvertisementsController : Controller
             Content = content,
             Timestamp = DateTime.UtcNow
         };
-    
+
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
-    
+
         return RedirectToAction("Details", new { id = advertisementId });
     }
-    
+
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -198,15 +211,15 @@ public class AdvertisementsController : Controller
             .Include(a => a.Comments)
             .ThenInclude(c => c.User)
             .FirstOrDefaultAsync(m => m.Id == id);
-        
+
         if (advertisement == null)
         {
             return NotFound();
         }
-        
+
         return View(advertisement);
     }
-    
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> AddRating(int advertisementId, int value)
@@ -216,7 +229,7 @@ public class AdvertisementsController : Controller
 
         if (!hasPurchased)
         {
-            return Forbid("You can only rate products you have purchased.");
+            return Forbid("Вы можете оценивать только те товары, которые вы приобрели.");
         }
 
         var rating = new Rating
@@ -226,10 +239,10 @@ public class AdvertisementsController : Controller
             Value = value,
             Timestamp = DateTime.UtcNow
         };
-    
+
         _context.Ratings.Add(rating);
         await _context.SaveChangesAsync();
-    
+
         return RedirectToAction(nameof(Details), new { id = advertisementId });
     }
 

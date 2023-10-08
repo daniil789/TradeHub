@@ -1,7 +1,7 @@
 ﻿@model PaginatedList<Advertisement>
 
 @{
-    ViewData["Title"] = "Advertisements";
+    ViewData["Title"] = "Объявления";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -17,11 +17,12 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Title</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Название</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Publication Date</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Дата публикации</a>
             </th>
+
             <!-- Добавьте дополнительные столбцы по необходимости -->
         </tr>
     </thead>
@@ -35,6 +36,12 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.PublicationDate)
                 </td>
+                <td>
+                    <a asp-all-route-data='new Dictionary<string,string> { { "id", item.Id.ToString() }}' asp-action="Details" asp-controller="Advertisements">Подробнее</a>
+                </td>
+                <td>
+                    <a asp-all-route-data='new Dictionary<string,string> { { "id", item.Id.ToString() }}' asp-action="Buy" asp-controller="Advertisements">Купить</a>
+                </td>
                 <!-- Добавьте дополнительные поля по необходимости -->
             </tr>
         }
@@ -46,11 +53,11 @@
        asp-route-pageNumber="@(Model.PageIndex - 1)" 
        asp-route-sortOrder="@ViewData["CurrentSort"]" 
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="@(Model.HasPreviousPage ? "enabled" : "disabled")">Previous</a>
+       class="@(Model.HasPreviousPage ? "enabled" : "disabled")">Назад</a>
        
     <a asp-action="Index" 
        asp-route-pageNumber="@(Model.PageIndex + 1)" 
        asp-route-sortOrder="@ViewData["CurrentSort"]" 
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="@(Model.HasNextPage ? "enabled" : "disabled")">Next</a>
+       class="@(Model.HasNextPage ? "enabled" : "disabled")">Следующая</a>
 </div>

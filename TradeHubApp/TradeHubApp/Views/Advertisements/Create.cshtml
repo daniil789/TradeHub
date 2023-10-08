@@ -1,23 +1,39 @@
 ﻿@model TradeHubApp.Models.Advertisement
 @{
-    ViewData["Title"] = "Create Advertisement";
+    ViewData["Title"] = "Создание объявления";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create">
     <div class="form-group">
-        <label asp-for="Title" class="control-label"></label>
+        <label asp-for="Title" class="control-label">Название</label>
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
+
+        <label asp-for="Description" class="control-label">Описание</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+
+        <label asp-for="Price" class="control-label">Цена</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+
+        <label asp-for="Category" class="control-label">Категория</label>
+        <input asp-for="Category" class="form-control" />
+        <span asp-validation-for="Category" class="text-danger"></span>
+
+        <label asp-for="Location" class="control-label">Место</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
     </div>
     <!-- Добавьте дополнительные поля по необходимости -->
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <input type="submit" value="Создать" class="btn btn-primary" />
     </div>
 </form>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад</a>
 </div>
 
 @section Scripts {
